@@ -1,0 +1,5 @@
+*.pyc
+*~
+__pycache__
+myvenv
+**/project/account.py
