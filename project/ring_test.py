@@ -1,5 +1,7 @@
 from ring_doorbell import Ring
 import account
+
+# set up Ring object with account details
 myring = Ring(account.email, account.password)
 
 

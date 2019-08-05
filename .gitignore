@@ -3,3 +3,5 @@
 __pycache__
 myvenv
 **/project/account.py
+**/project/last_motion.mp4
+**/project/detected_video.avi
