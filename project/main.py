@@ -19,6 +19,9 @@ yagmail.register(account.email, account.password)
 yag = yagmail.SMTP(account.email)
 
 # send the email to your email
-subject = 'Ring Motion Detection'
-contents = [f'A {moving_objects[0]} was detected moving at {time_detected}.', 'detected_video.avi']
+subject = "Ring Motion Detection"
+contents = [
+    f"A {moving_objects[0]} was detected moving at {time_detected}.",
+    "detected_video.avi",
+]
 yag.send(account.email, subject, contents)

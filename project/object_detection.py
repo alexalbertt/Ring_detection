@@ -4,12 +4,13 @@ import time
 import cv2
 import os
 
+
 def run_script(video_name):
     """Main function"""
 
     # set variables
     CONFIDENCE = 0.5
-    THRESHOLD = .3
+    THRESHOLD = 0.3
     firstFrame = None
     movX, movY, movW, movH = 0, 0, 0, 0
     moving_objects = []
@@ -20,8 +21,7 @@ def run_script(video_name):
 
     # initialize a list of colors to represent each possible class label
     np.random.seed(42)
-    COLORS = np.random.randint(0, 255, size=(len(LABELS), 3),
-        dtype="uint8")
+    COLORS = np.random.randint(0, 255, size=(len(LABELS), 3), dtype="uint8")
 
     # derive the paths to the YOLO weights and model configuration
     weightsPath = os.path.sep.join(["yolo-coco", "yolov3.weights"])
@@ -43,8 +43,11 @@ def run_script(video_name):
 
     # try to determine the total number of frames in the video file
     try:
-        prop = cv2.cv.CV_CAP_PROP_FRAME_COUNT if imutils.is_cv2() \
+        prop = (
+            cv2.cv.CV_CAP_PROP_FRAME_COUNT
+            if imutils.is_cv2()
             else cv2.CAP_PROP_FRAME_COUNT
+        )
         total = int(vs.get(prop))
         print("[INFO] {} total frames in video".format(total))
 
@@ -87,16 +90,17 @@ def run_script(video_name):
         # dilate the thresholded image to fill in holes, then find contours
         # on thresholded image
         thresh = cv2.dilate(thresh, None, iterations=2)
-        cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-            cv2.CHAIN_APPROX_SIMPLE)
+        cnts = cv2.findContours(
+            thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
+        )
         cnts = imutils.grab_contours(cnts)
-
 
         # construct a blob from the input frame and then perform a forward
         # pass of the YOLO object detector, giving us our bounding boxes
         # and associated probabilities
-        blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416),
-            swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(
+            frame, 1 / 255.0, (416, 416), swapRB=True, crop=False
+        )
         net.setInput(blob)
         start = time.time()
         layerOutputs = net.forward(ln)
@@ -129,7 +133,6 @@ def run_script(video_name):
                     box = detection[0:4] * np.array([W, H, W, H])
                     (centerX, centerY, width, height) = box.astype("int")
 
-
                     # use the center (x, y)-coordinates to derive the top
                     # and and left corner of the bounding box
                     x = int(centerX - (width / 2))
@@ -143,8 +146,7 @@ def run_script(video_name):
 
         # apply non-maxima suppression to suppress weak, overlapping
         # bounding boxes
-        idxs = cv2.dnn.NMSBoxes(boxes, confidences, CONFIDENCE,
-            THRESHOLD)
+        idxs = cv2.dnn.NMSBoxes(boxes, confidences, CONFIDENCE, THRESHOLD)
 
         # ensure at least one detection exists
         if len(idxs) > 0:
@@ -171,24 +173,32 @@ def run_script(video_name):
                         moving_objects.append(LABELS[classIDs[i]])
                         color = [int(c) for c in COLORS[classIDs[i]]]
                         cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-                        text = "{}: {:.4f}".format(LABELS[classIDs[i]],
-                            confidences[i])
-                        cv2.putText(frame, text, (x, y - 5),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+                        text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
+                        cv2.putText(
+                            frame,
+                            text,
+                            (x, y - 5),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5,
+                            color,
+                            2,
+                        )
 
         # check if the video writer is None
         if writer is None:
             # initialize our video writer
             fourcc = cv2.VideoWriter_fourcc(*"MJPG")
-            writer = cv2.VideoWriter("detected_video.avi", fourcc, 30,
-                (frame.shape[1], frame.shape[0]), True)
+            writer = cv2.VideoWriter(
+                "detected_video.avi", fourcc, 30, (frame.shape[1], frame.shape[0]), True
+            )
 
             # information on processing single frame
             if total > 0:
-                elap = (end - start)
+                elap = end - start
                 print("[INFO] single frame took {:.4f} seconds".format(elap))
-                print("[INFO] estimated total time to finish: {:.4f}".format(
-                    elap * total))
+                print(
+                    "[INFO] estimated total time to finish: {:.4f}".format(elap * total)
+                )
 
         # write the output frame to disk
         writer.write(frame)
@@ -201,6 +211,7 @@ def run_script(video_name):
     writer.release()
     vs.release()
     return moving_objects
+
 
 if __name__ == "__main__":
     run_script("last_motion.mp4")
