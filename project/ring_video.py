@@ -1,9 +1,9 @@
 from ring_doorbell import Ring
 import account
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 # set up Ring object with account details
 myring = Ring(account.email, account.password)
-video_name = "last_motion.mp4"
 ringDoorbells = myring.doorbells
 
 def CameraCheck():
@@ -22,11 +22,13 @@ def CameraCheck():
         print('Wifi RSSI:  %s' % dev.wifi_signal_strength)
         print('Battery Life: %s' % dev.battery_life)
 
-def doorbellCamVideo(video_name):
+def doorbellCamVideo():
+        video_name = "last_motion.mp4"
         doorbell = myring.doorbells[0]
         doorbell.recording_download(
             doorbell.history(limit=100, kind='motion')[0]['id'],
-                                    filename=video_name, override=True)
+                                    filename="raw_video.mp4", override=True)
+        ffmpeg_extract_subclip("raw_video.mp4", 0, 10, targetname=video_name)
         return video_name
 
 def doorbellCamMotion():
@@ -41,5 +43,5 @@ def doorbellCamMotion():
 
 if __name__ == "__main__":
     CameraCheck()
-    doorbellCamVideo(video_name)
+    doorbellCamVideo()
     doorbellCamMotion()

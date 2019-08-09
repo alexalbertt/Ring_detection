@@ -5,3 +5,5 @@ myvenv
 **/project/account.py
 **/project/last_motion.mp4
 **/project/detected_video.avi
+**/project/yolo-coco
+**/project/raw_video.mp4
