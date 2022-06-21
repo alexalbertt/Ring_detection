@@ -1,7 +1,7 @@
 imutils==0.5.2
 keyring==19.0.2
 moviepy==1.0.0
-numpy==1.17.0
+numpy==1.22.0
 opencv-contrib-python==4.1.0.25
 ring-doorbell==0.2.3
 yagmail==0.11.220
